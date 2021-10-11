@@ -1,0 +1,37 @@
+GET http://localhost:9080/Laboratorium1-1.0-SNAPSHOT/api/users/1
+
+###
+GET http://localhost:9080/Laboratorium1-1.0-SNAPSHOT/api/users
+
+###
+GET http://localhost:9080/Laboratorium1-1.0-SNAPSHOT/api/avatar/1
+
+###
+
+POST http://localhost:9080/Laboratorium1-1.0-SNAPSHOT/api/avatar/1
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="avatar"; filename="zereni.png"
+
+< D:\avatars\zereni.png
+--boundary--
+
+###
+
+###
+
+PUT http://localhost:9080/Laboratorium1-1.0-SNAPSHOT/api/avatar/1
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="avatar"; filename="calvian.png"
+
+< D:\avatars\calvian.png
+--boundary--
+
+###
+
+DELETE http://localhost:9080/Laboratorium1-1.0-SNAPSHOT/api/avatar/1
+
+
