@@ -56,8 +56,20 @@ public class InitializedData {
                 .avatarPath("")
                 .build();
 
+        User tomekNowak = User.builder()
+                .id(4L)
+                .login("tomek_nowak")
+                .name("Tomek")
+                .surname("Nowak")
+                .birthday(LocalDate.of(2005, 7, 9))
+                .isPatron(true)
+                .sex("male")
+                .avatarPath("")
+                .build();
+
         userService.create(admin);
         userService.create(weronikaPiotrowska);
         userService.create(kasiaKowalska);
+        userService.create(tomekNowak);
     }
 }

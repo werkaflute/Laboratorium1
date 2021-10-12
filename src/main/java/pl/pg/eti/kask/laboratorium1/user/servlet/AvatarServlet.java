@@ -46,81 +46,6 @@ public class AvatarServlet extends HttpServlet {
 
     }
 
-    private void getAvatar(HttpServletRequest request, HttpServletResponse response) throws IOException{
-        Long id = Long.parseLong(ServletUtility.parseRequestPath(request).replaceAll("/", ""));
-        Optional<User> user = userService.find(id);
-        if(user.isPresent() && !Objects.equals(user.get().getAvatarPath(), "")){
-            String filePath = user.get().getAvatarPath();
-            File downloadFile = new File(filePath);
-            FileInputStream inStream = new FileInputStream(downloadFile);
-            response.addHeader(HttpHeaders.CONTENT_TYPE, MimeTypes.IMAGE_PNG);
-            response.setContentLength((int)downloadFile.length());
-            OutputStream outStream = response.getOutputStream();
-            byte[] buffer = new byte[4096];
-            int bytesRead = -1;
-            while ((bytesRead = inStream.read(buffer)) != -1) {
-                outStream.write(buffer, 0, bytesRead);
-            }
-            inStream.close();
-            outStream.close();
-        } else{
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-        }
-    }
-
-    private void postAvatar(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        Long id = Long.parseLong(ServletUtility.parseRequestPath(request).replaceAll("/", ""));
-        Optional<User> user = userService.find(id);
-        if(user.isPresent() && Objects.equals(user.get().getAvatarPath(), "")){
-            Part avatar = request.getPart(Parameters.AVATAR);
-            String fileName = java.nio.file.Paths.get(avatar.getSubmittedFileName()).getFileName().toString();
-            InputStream inputStream = avatar.getInputStream();
-            saveAvatarFile("D:\\avatars-przeslane\\" + fileName, inputStream);
-            user.get().setAvatarPath("D:\\avatars-przeslane\\" + fileName);
-            userService.update(user.get());
-
-        }
-    }
-
-    private void saveAvatarFile(String filePath , InputStream inputStream) throws IOException{
-        File file = new File(filePath);
-        try (FileOutputStream outputStream = new FileOutputStream(file)) {
-            int read;
-            byte[] bytes = new byte[1024];
-            while ((read = inputStream.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, read);
-            }
-        }
-    }
-
-    private void putAvatar(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        Long id = Long.parseLong(ServletUtility.parseRequestPath(request).replaceAll("/", ""));
-        Optional<User> user = userService.find(id);
-        if(user.isPresent() && !Objects.equals(user.get().getAvatarPath(), "")) {
-            Part avatar = request.getPart(Parameters.AVATAR);
-            String fileName = java.nio.file.Paths.get(avatar.getSubmittedFileName()).getFileName().toString();
-            InputStream inputStream = avatar.getInputStream();
-            saveAvatarFile("D:\\avatars-przeslane\\" + fileName, inputStream);
-            String filePath = user.get().getAvatarPath();
-            File fileOld = new File(filePath);
-            fileOld.delete();
-            user.get().setAvatarPath("D:\\avatars-przeslane\\" + fileName);
-            userService.update(user.get());
-        }
-    }
-
-
-    private void deleteAvatar(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        Long id = Long.parseLong(ServletUtility.parseRequestPath(request).replaceAll("/", ""));
-        Optional<User> user = userService.find(id);
-        if(user.isPresent() && !Objects.equals(user.get().getAvatarPath(), "")) {
-            String filePath = user.get().getAvatarPath();
-            File file = new File(filePath);
-            file.delete();
-            user.get().setAvatarPath("");
-            userService.update(user.get());
-        }
-    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -175,5 +100,66 @@ public class AvatarServlet extends HttpServlet {
             }
         }
         response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    private void getAvatar(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        Long id = Long.parseLong(ServletUtility.parseRequestPath(request).replaceAll("/", ""));
+        Optional<User> user = userService.find(id);
+        if(user.isPresent() && !Objects.equals(user.get().getAvatarPath(), "")){
+            String filePath = user.get().getAvatarPath();
+            File downloadFile = new File(filePath);
+            response.setContentLength((int)downloadFile.length());
+            FileInputStream inStream = new FileInputStream(downloadFile);
+            response.addHeader(HttpHeaders.CONTENT_TYPE, MimeTypes.IMAGE_PNG);
+            OutputStream outStream = response.getOutputStream();
+            userService.getAvatar(inStream, outStream);
+            inStream.close();
+            outStream.close();
+        } else{
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    private void postAvatar(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        Long id = Long.parseLong(ServletUtility.parseRequestPath(request).replaceAll("/", ""));
+        Optional<User> user = userService.find(id);
+        if(user.isPresent() && Objects.equals(user.get().getAvatarPath(), "")){
+            Part avatar = request.getPart(Parameters.AVATAR);
+            String fileName = java.nio.file.Paths.get(avatar.getSubmittedFileName()).getFileName().toString();
+            InputStream inputStream = avatar.getInputStream();
+            userService.saveAvatarFile("D:\\Studia- informatyka\\7 semestr\\Narzędzia i Aplikacje Java EE\\Laboratorium\\Laboratorium 1\\Laboratorium1\\src\\main\\avatars\\" + fileName, inputStream);
+            user.get().setAvatarPath("D:\\Studia- informatyka\\7 semestr\\Narzędzia i Aplikacje Java EE\\Laboratorium\\Laboratorium 1\\Laboratorium1\\src\\main\\avatars\\" + fileName);
+            userService.update(user.get());
+
+        }
+    }
+
+    private void putAvatar(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        Long id = Long.parseLong(ServletUtility.parseRequestPath(request).replaceAll("/", ""));
+        Optional<User> user = userService.find(id);
+        if(user.isPresent() && !Objects.equals(user.get().getAvatarPath(), "")) {
+            Part avatar = request.getPart(Parameters.AVATAR);
+            String fileName = java.nio.file.Paths.get(avatar.getSubmittedFileName()).getFileName().toString();
+            InputStream inputStream = avatar.getInputStream();
+            userService.saveAvatarFile("D:\\Studia- informatyka\\7 semestr\\Narzędzia i Aplikacje Java EE\\Laboratorium\\Laboratorium 1\\Laboratorium1\\src\\main\\avatars\\" + fileName, inputStream);
+            String filePath = user.get().getAvatarPath();
+            File fileOld = new File(filePath);
+            fileOld.delete();
+            user.get().setAvatarPath("D:\\Studia- informatyka\\7 semestr\\Narzędzia i Aplikacje Java EE\\Laboratorium\\Laboratorium 1\\Laboratorium1\\src\\main\\avatars\\" + fileName);
+            userService.update(user.get());
+        }
+    }
+
+
+    private void deleteAvatar(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        Long id = Long.parseLong(ServletUtility.parseRequestPath(request).replaceAll("/", ""));
+        Optional<User> user = userService.find(id);
+        if(user.isPresent() && !Objects.equals(user.get().getAvatarPath(), "")) {
+            String filePath = user.get().getAvatarPath();
+            File file = new File(filePath);
+            file.delete();
+            user.get().setAvatarPath("");
+            userService.update(user.get());
+        }
     }
 }
